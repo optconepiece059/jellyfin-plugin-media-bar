@@ -1,0 +1,35 @@
+name: Build MediaBar
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Restore
+        run: dotnet restore src/Jellyfin.Plugin.MediaBar/Jellyfin.Plugin.MediaBar.csproj
+
+      - name: Publish
+        run: dotnet publish src/Jellyfin.Plugin.MediaBar/Jellyfin.Plugin.MediaBar.csproj -c Release -o publish
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Jellyfin.Plugin.MediaBar
+          path: publish
